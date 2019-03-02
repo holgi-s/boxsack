@@ -16,6 +16,8 @@ commands:
     steps:
       - checkout
       - run:
+          command: mkdir out
+      - run:
           name: Build arduino hex fil
           command: arduino-cli compile -b arduino:avr:nano Software/BoxSack -o out/boxsack.hex
       - store_artifacts:
