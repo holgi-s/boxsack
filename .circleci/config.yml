@@ -54,7 +54,7 @@ workflows:
   workflow:
     jobs:
       - build-job
-      - publish-github-job
+      - publish-github-job:
           requires:
             - build-job
           filters:
