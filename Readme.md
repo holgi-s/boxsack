@@ -24,4 +24,5 @@ Used to smoothen the display
 
 ## Build Status  
 
-Autmatic build using **arduino-cli**. [![CircleCI](https://circleci.com/gh/holgi-s/boxsack.svg?style=svg&circle-token=25a9c8eae0684a9ce4d59bd7416e888d4b50340c)](https://circleci.com/gh/holgi-s/boxsack)
+Autmatic build using **arduino-cli**  
+<img src="https://circleci.com/gh/holgi-s/boxsack.svg?style=svg&circle-token=25a9c8eae0684a9ce4d59bd7416e888d4b50340c" alt="CircleCI" />
