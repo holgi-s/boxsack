@@ -1,0 +1,32 @@
+version: 2.1
+
+executors:
+  arduino-executor:
+    docker:
+    - image: holgis/arduino-nano:latest
+    environment:
+      JVM_OPTS: -Xmx3200m
+
+commands:
+  build-command:
+    description: "Build"
+    steps:
+      - checkout
+      - run:
+          name: Build androidTest hex
+          command: arduino-cli compile -b arduino:avr:nano Software/BoxSack -o boxsack.hex
+      - store_artifacts:
+          path: ~/code/boxsack.hex
+          destination: boxsack
+
+jobs:
+  build-job:
+    executor: arduino-executor
+    working_directory: ~/code
+    steps:
+      - build-command
+
+workflows:
+  workflow:
+    jobs:
+      - build-job

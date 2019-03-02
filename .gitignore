@@ -1,0 +1,6 @@
+# Built application files
+
+Software/BoxSack/.vscode/
+Software/BoxSack/*.hex
+Software/BoxSack/*.elf
+Hardware/BoxSack_Gerber/
