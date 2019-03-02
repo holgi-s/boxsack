@@ -6,6 +6,9 @@ executors:
     - image: holgis/arduino-nano:latest
     environment:
       JVM_OPTS: -Xmx3200m
+  github-executor:
+    docker:
+    - image: circleci/golang:1.8
 
 commands:
   build-command:
@@ -13,11 +16,21 @@ commands:
     steps:
       - checkout
       - run:
-          name: Build androidTest hex
-          command: arduino-cli compile -b arduino:avr:nano Software/BoxSack -o boxsack.hex
+          name: Create output folder
+          command: mkdir out
+      - run:
+          name: Build arduino hex file
+          command: arduino-cli compile -b arduino:avr:nano Software/BoxSack -o out/boxsack.hex
       - store_artifacts:
-          path: ~/code/boxsack.hex
-          destination: boxsack
+          path: ~/code/out/boxsack.hex
+          destination: boxsack.hex
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
+          # taken to be the root directory of the workspace.
+          root: ~/code/out
+          # Must be relative path from root
+          paths:
+            - .
 
 jobs:
   build-job:
@@ -26,7 +39,28 @@ jobs:
     steps:
       - build-command
 
+  publish-github-job:
+    executor: github-executor
+    working_directory: ~/code
+    steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: /home/circleci/code/out
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            go get github.com/tcnksm/ghr
+            VERSION=1.0.${CIRCLE_BUILD_NUM}
+            ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete -replace ${VERSION} ~/code/out/boxsack.hex
+
 workflows:
   workflow:
     jobs:
       - build-job
+      - publish-github-job:
+          requires:
+            - build-job
+          filters:
+            branches:
+              only:
+                - release              
